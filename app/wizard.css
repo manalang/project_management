@@ -1,0 +1,21 @@
+.steps{grid-template-columns:repeat(5,1fr)}
+.uploadstep{background:white;border:1px solid #d5e0e3;border-radius:12px;box-shadow:0 16px 45px #17313a12;padding:32px}
+.uploadstep h2{font-size:22px;margin:0}
+.uploadstep h2 small{font-size:12px;color:#087287;background:#e4f1f3;border-radius:99px;padding:5px 9px;margin-left:8px;vertical-align:middle}
+.uploadstep>p{color:#667780}
+.dropzone{min-height:190px;border:2px dashed #a9c2c8;border-radius:10px;background:#f6fafb;display:grid!important;place-items:center;align-content:center;text-align:center;gap:7px;cursor:pointer;margin:24px 0!important}
+.dropzone:hover{border-color:#16879a;background:#eef7f8}
+.dropzone svg{width:38px;height:38px;color:#087287}
+.dropzone strong,.dropzone span{display:block}
+.dropzone span{font-size:12px;color:#71808a}
+.dropzone input{position:absolute;width:1px;height:1px;opacity:0}
+.filelist{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important}
+.filelist>div{display:flex;align-items:center;gap:10px;border:1px solid #dbe3e6;border-radius:7px;padding:10px}
+.filelist svg{width:20px;color:#087287}
+.filelist strong,.filelist small{display:block}
+.filelist small{color:#71808a}
+.uploadstep footer{display:flex;justify-content:space-between;border-top:1px solid #e4eaec;padding-top:20px;margin-top:22px}
+.uploaderror{color:#a83a34!important;background:#fdebea;padding:10px 12px;border-radius:7px}
+.imported{display:flex!important;grid-template-columns:none!important;gap:9px!important;align-items:center;background:#e8f5f1;color:#14765f;border-radius:7px;padding:10px 12px;font-size:13px;font-weight:700}
+.imported svg{width:19px}
+@media(max-width:760px){.uploadstep{padding:22px}.filelist{grid-template-columns:1fr!important}.steps{grid-template-columns:repeat(5,1fr)}}

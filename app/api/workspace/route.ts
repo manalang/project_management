@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { getChatGPTUser } from "../../chatgpt-auth";
+const uid=()=>typeof crypto.randomUUID==="function"?crypto.randomUUID():Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
 
 async function owner(){return (await getChatGPTUser())?.userId ?? "local-preview"}
 async function removeStarterData(ownerId:string){
@@ -26,12 +27,16 @@ export async function GET(){
 export async function POST(req:Request){
  const o=await owner(),b=await req.json() as Record<string,unknown>;
  if(b.type==="project"){
-  const id=crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO projects VALUES (?,?,?,?,?,'Planning','good',0,?,0,?,?)")
-   .bind(id,o,String(b.name),String(b.code).toUpperCase(),String(b.objective),Number(b.budget)||0,String(b.startDate),String(b.endDate)).run();
+  const id=uid();
+  await env.DB.batch([
+   env.DB.prepare("INSERT INTO projects VALUES (?,?,?,?,?,'Planning','good',0,?,0,?,?)")
+    .bind(id,o,String(b.name),String(b.code).toUpperCase(),String(b.objective),Number(b.budget)||0,String(b.startDate),String(b.endDate)),
+   env.DB.prepare("UPDATE project_documents SET project_id=? WHERE owner_id=? AND draft_id=?")
+    .bind(id,o,String(b.draftId||"")),
+  ]);
   return Response.json({id},{status:201});
  }
- if(b.type==="task"){const id=crypto.randomUUID();await env.DB.prepare("INSERT INTO tasks VALUES (?,?,?,?,?,?,'Not started',?,?,NULL)").bind(id,o,String(b.projectId),String(b.title),String(b.assignee||"Unassigned"),String(b.dueDate),String(b.priority||"Medium"),b.critical?1:0).run();return Response.json({id},{status:201})}
+ if(b.type==="task"){const id=uid();await env.DB.prepare("INSERT INTO tasks VALUES (?,?,?,?,?,?,'Not started',?,?,NULL)").bind(id,o,String(b.projectId),String(b.title),String(b.assignee||"Unassigned"),String(b.dueDate),String(b.priority||"Medium"),b.critical?1:0).run();return Response.json({id},{status:201})}
  if(b.type==="task-status"){await env.DB.prepare("UPDATE tasks SET status=? WHERE id=? AND owner_id=?").bind(String(b.status),String(b.id),o).run();return Response.json({ok:true})}
  return Response.json({error:"Unsupported action"},{status:400});
 }

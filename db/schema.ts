@@ -29,3 +29,15 @@ export const metrics = sqliteTable("metrics", {
   target: real("target").notNull(), unit: text("unit").notNull(),
   measuredAt: text("measured_at").notNull(),
 });
+export const projectDocuments = sqliteTable("project_documents", {
+  id: text("id").primaryKey(),
+  ownerId: text("owner_id").notNull(),
+  projectId: text("project_id").references(()=>projects.id),
+  draftId: text("draft_id").notNull(),
+  filename: text("filename").notNull(),
+  contentType: text("content_type").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  r2Key: text("r2_key").notNull(),
+  excerpt: text("excerpt").notNull(),
+  createdAt: text("created_at").notNull(),
+});

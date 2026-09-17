@@ -4,14 +4,14 @@ A browser-based toolkit for managing engineering development and long-term opera
 
 ## Current capabilities
 
-- Guided project initialization
+- Guided project initialization with document import
+- PDF, Word, Excel/CSV, text, and Markdown extraction
 - Portfolio health dashboard and project drill-downs
 - Dependency-aware schedules and critical-path tasks
 - Task assignments and status tracking
 - Budget-versus-actual monitoring
-- Meeting agendas and notes
-- Project metrics and printable status reports
-- Persistent, user-owned project data
+- Meeting agendas, project metrics, and printable reports
+- Persistent project records and retained source documents
 
 ## Development
 
@@ -22,4 +22,4 @@ npm install
 npm run build
 ```
 
-The application uses a Cloudflare Worker-compatible runtime and D1 database. GitHub Pages alone cannot run the authenticated database backend; production deployment should be triggered from this repository to a server-capable host.
+The application uses a Cloudflare Worker-compatible runtime, D1 database, and R2 document storage. GitHub Pages alone cannot run the authenticated backend; production deployment should be triggered from this repository to a server-capable host.

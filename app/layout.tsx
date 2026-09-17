@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./wizard.css";
 
 export const metadata: Metadata = {
   title: "Engineering Project Control",
