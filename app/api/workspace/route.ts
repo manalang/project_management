@@ -36,11 +36,16 @@ export async function POST(req:Request){
   ]);
   return Response.json({id},{status:201});
  }
- if(b.type==="task"){const id=uid();await env.DB.prepare("INSERT INTO tasks VALUES (?,?,?,?,?,?,'Not started',?,?,?)").bind(id,o,String(b.projectId),String(b.title),String(b.assignee||"Unassigned"),String(b.dueDate),String(b.priority||"Medium"),b.critical?1:0,b.dependsOn?String(b.dependsOn):null).run();return Response.json({id},{status:201})}
+ if(b.type==="task"){
+  const id=uid();
+  await env.DB.prepare("INSERT INTO tasks (id,owner_id,project_id,title,assignee,due_date,status,priority,critical,depends_on,parent_id,notes) VALUES (?,?,?,?,?,?,?,?,0,NULL,?,?)")
+   .bind(id,o,String(b.projectId),String(b.title),String(b.assignee||"Unassigned"),String(b.dueDate),String(b.status||"Not started"),String(b.priority||"Medium"),b.parentId?String(b.parentId):null,String(b.notes||"")).run();
+  return Response.json({id},{status:201});
+ }
  if(b.type==="task-status"){await env.DB.prepare("UPDATE tasks SET status=? WHERE id=? AND owner_id=?").bind(String(b.status),String(b.id),o).run();return Response.json({ok:true})}
  if(b.type==="task-update"){
-  await env.DB.prepare("UPDATE tasks SET title=?,assignee=?,due_date=?,status=?,priority=?,critical=?,depends_on=? WHERE id=? AND owner_id=?")
-   .bind(String(b.title),String(b.assignee||"Unassigned"),String(b.dueDate),String(b.status),String(b.priority||"Medium"),b.critical?1:0,b.dependsOn?String(b.dependsOn):null,String(b.id),o).run();
+  await env.DB.prepare("UPDATE tasks SET project_id=?,title=?,assignee=?,due_date=?,status=?,priority=?,parent_id=?,notes=? WHERE id=? AND owner_id=?")
+   .bind(String(b.projectId),String(b.title),String(b.assignee||"Unassigned"),String(b.dueDate),String(b.status),String(b.priority||"Medium"),b.parentId?String(b.parentId):null,String(b.notes||""),String(b.id),o).run();
   return Response.json({ok:true});
  }
  if(b.type==="project-update"){

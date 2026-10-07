@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "./wizard.css";
 
 export const metadata: Metadata = {
-  title: "Engineering Project Control",
-  description: "Portfolio control for engineering development and operations.",
+  title: "Project Task Tracker",
+  description: "A focused task and resource tracker for engineering projects.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

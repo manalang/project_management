@@ -1,4 +1,4 @@
-import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const projects = sqliteTable("projects", {
   id: text("id").primaryKey(), ownerId: text("owner_id").notNull(),
@@ -15,7 +15,13 @@ export const tasks = sqliteTable("tasks", {
   dueDate: text("due_date").notNull(), status: text("status").notNull(),
   priority: text("priority").notNull(), critical: integer("critical",{mode:"boolean"}).notNull(),
   dependsOn: text("depends_on"),
-});
+  parentId: text("parent_id"),
+  notes: text("notes").notNull().default(""),
+}, (table)=>[
+  index("idx_tasks_owner_due").on(table.ownerId,table.dueDate),
+  index("idx_tasks_owner_project").on(table.ownerId,table.projectId),
+  index("idx_tasks_parent").on(table.parentId),
+]);
 export const meetings = sqliteTable("meetings", {
   id: text("id").primaryKey(), ownerId: text("owner_id").notNull(),
   projectId: text("project_id").notNull().references(()=>projects.id),
