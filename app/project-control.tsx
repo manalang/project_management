@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
-import {CalendarDays,Check,CheckCircle2,ChevronRight,Circle,FolderKanban,Menu,Plus,Search,ShieldCheck,Users,X} from "lucide-react";
+import {CalendarDays,Check,CheckCircle2,ChevronRight,Circle,FolderKanban,LogOut,Menu,Plus,Search,ShieldCheck,Users,X} from "lucide-react";
 import {Button} from "@/components/ui/button";
 
 type P={id:string;name:string;code:string;objective:string;status:string};
@@ -14,11 +14,11 @@ const fmt=(date:string)=>new Intl.DateTimeFormat("en-US",{month:"short",day:"num
 const post=(body:Record<string,unknown>)=>fetch("/api/workspace",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
 const people=(value:string)=>value.split(/[,;]+/).map(v=>v.trim()).filter(Boolean);
 
-export default function ProjectControl({displayName}:{displayName:string}){
+export default function ProjectControl({displayName,signOutPath}:{displayName:string;signOutPath:string}){
  const[data,setData]=useState<D|null>(null),[accessError,setAccessError]=useState(""),[project,setProject]=useState("all"),[sort,setSort]=useState<Sort>("due"),[query,setQuery]=useState(""),[mobile,setMobile]=useState(false),[edit,setEdit]=useState<{task?:T;parent?:T}|null>(null),[newProject,setNewProject]=useState(false),[accessOpen,setAccessOpen]=useState(false);
  const load=()=>fetch("/api/workspace").then(async r=>{const result=await r.json();if(!r.ok){setAccessError(result.error||"Access denied");return}setAccessError("");setData(result)});useEffect(()=>{void load()},[]);
  const tasks=useMemo(()=>{if(!data)return[];const open=data.tasks.filter(t=>t.status!=="Complete"&&(project==="all"||t.project_id===project)&&(t.title+" "+t.notes+" "+t.assignee).toLowerCase().includes(query.toLowerCase()));const projectName=(id:string)=>data.projects.find(p=>p.id===id)?.name||"";return open.sort((a,b)=>sort==="project"?projectName(a.project_id).localeCompare(projectName(b.project_id))||a.due_date.localeCompare(b.due_date):sort==="resource"?a.assignee.localeCompare(b.assignee)||a.due_date.localeCompare(b.due_date):a.due_date.localeCompare(b.due_date))},[data,project,sort,query]);
- if(accessError)return <div className="access-denied"><ShieldCheck/><h1>Access not yet granted</h1><p>{accessError}</p><small>Ask the tracker owner to invite your signed-in email address.</small></div>;
+ if(accessError)return <div className="access-denied"><ShieldCheck/><h1>Access not yet granted</h1><p>{accessError}</p><small>Ask the tracker owner to invite your signed-in email address.</small><a href={signOutPath} target="_top"><LogOut/>Sign out or switch account</a></div>;
  if(!data)return <div className="loading"><b>TT</b><span>Loading task tracker…</span></div>;
  const selected=data.projects.find(p=>p.id===project),overdue=tasks.filter(t=>t.due_date<today()).length,dueSoon=tasks.filter(t=>t.due_date>=today()&&t.due_date<=new Date(Date.now()+7*86400000).toISOString().slice(0,10)).length;
  return <div className="tracker-shell">
@@ -26,7 +26,7 @@ export default function ProjectControl({displayName}:{displayName:string}){
    <div className="tracker-brand"><b><Check/></b><span><strong>Task Tracker</strong><small>{displayName}</small></span></div>
    <div className="nav-label"><span>Projects</span>{data.currentUser.canManage&&<button aria-label="Add project" onClick={()=>setNewProject(true)}><Plus/></button>}</div>
    <nav><button className={project==="all"?"active":""} onClick={()=>{setProject("all");setMobile(false)}}><FolderKanban/><span>All projects</span><small>{data.tasks.filter(t=>t.status!=="Complete").length}</small></button>{data.projects.map(p=><button key={p.id} className={project===p.id?"active":""} onClick={()=>{setProject(p.id);setMobile(false)}}><i>{p.code.slice(0,2)}</i><span>{p.name}</span><small>{data.tasks.filter(t=>t.project_id===p.id&&t.status!=="Complete").length}</small></button>)}</nav>
-   {data.currentUser.canManage&&<><button className="access-button" onClick={()=>setAccessOpen(true)}><ShieldCheck/>People & access</button><button className="new-project" onClick={()=>setNewProject(true)}><Plus/>New project</button></>}
+   <div className="nav-actions">{data.currentUser.canManage&&<><button className="access-button" onClick={()=>setAccessOpen(true)}><ShieldCheck/>People & access</button><button className="new-project" onClick={()=>setNewProject(true)}><Plus/>New project</button></>}<div className="account-card"><span><strong>{data.currentUser.name}</strong><small>{data.currentUser.email}</small><em>{data.currentUser.role}</em></span><a href={signOutPath} target="_top" aria-label="Sign out or switch account" title="Sign out or switch account"><LogOut/></a></div></div>
   </aside>
   <main className="tracker-main">
    <header className="tracker-header"><button className="mobile-menu" onClick={()=>setMobile(v=>!v)}><Menu/></button><div><small>{selected?.code||data.currentUser.role.toUpperCase()}</small><h1>{selected?.name||"Ongoing tasks"}</h1></div>{data.currentUser.canManage&&<Button onClick={()=>setEdit({})}><Plus/>Add task</Button>}</header>
