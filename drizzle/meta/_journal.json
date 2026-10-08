@@ -29,6 +29,13 @@
       "when": 1791417304047,
       "tag": "0003_thin_martin_li",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1791419308600,
+      "tag": "0004_lame_goliath",
+      "breakpoints": true
     }
   ]
 }

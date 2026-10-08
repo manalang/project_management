@@ -47,3 +47,18 @@ export const projectDocuments = sqliteTable("project_documents", {
   excerpt: text("excerpt").notNull(),
   createdAt: text("created_at").notNull(),
 });
+export const workspaceMembers = sqliteTable("workspace_members", {
+  id: text("id").primaryKey(), workspaceOwnerId: text("workspace_owner_id").notNull(),
+  email: text("email").notNull(), name: text("name").notNull(),
+  role: text("role").notNull(), createdAt: text("created_at").notNull(),
+}, (table)=>[
+  index("idx_members_email").on(table.email),
+  index("idx_members_workspace").on(table.workspaceOwnerId),
+]);
+export const projectAccess = sqliteTable("project_access", {
+  id: text("id").primaryKey(), memberId: text("member_id").notNull().references(()=>workspaceMembers.id),
+  projectId: text("project_id").notNull().references(()=>projects.id), projectRole: text("project_role").notNull(),
+}, (table)=>[
+  index("idx_project_access_member").on(table.memberId),
+  index("idx_project_access_project").on(table.projectId),
+]);
