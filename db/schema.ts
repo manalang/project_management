@@ -16,6 +16,7 @@ export const tasks = sqliteTable("tasks", {
   priority: text("priority").notNull(), critical: integer("critical",{mode:"boolean"}).notNull(),
   dependsOn: text("depends_on"),
   parentId: text("parent_id"),
+  description: text("description").notNull().default(""),
   notes: text("notes").notNull().default(""),
 }, (table)=>[
   index("idx_tasks_owner_due").on(table.ownerId,table.dueDate),
