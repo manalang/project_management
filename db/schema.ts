@@ -7,6 +7,7 @@ export const projects = sqliteTable("projects", {
   health: text("health").notNull(), progress: integer("progress").notNull(),
   budget: real("budget").notNull(), spent: real("spent").notNull(),
   startDate: text("start_date").notNull(), endDate: text("end_date").notNull(),
+  color: text("color").notNull().default("#2f8f9d"),
 });
 export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey(), ownerId: text("owner_id").notNull(),
